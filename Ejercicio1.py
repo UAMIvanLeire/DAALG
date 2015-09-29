@@ -1,5 +1,6 @@
 from numpy import *
 
+
 def initS():
  return []
 
