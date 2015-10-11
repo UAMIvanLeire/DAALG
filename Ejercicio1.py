@@ -1,4 +1,7 @@
-from numpy import *
+import numpy as np
+import random
+import matplotlib.pyplot as mpl
+import timeit as time
 
 def initS():
  return []
@@ -52,26 +55,81 @@ def randomPalyndrome(long, strBase):
     list3 = randomString(1, strBase)
     return list1 + list3 + list2
 
+#FIX-ME
 def generateRandomPalyndrList(numSt, longMax, probPalyndrome):
   return 0
 
 def countPalyndromesList(l):
-  laux = l
+  laux = initS()
   list = initS()
   for i in range(len(l)):
     eleml = pop(l)
+    push(eleml, laux)
     if isPalyndromeSmall(eleml):
       push(eleml, list)
+  print laux
   l = laux
   return len(list)
 
 def list2file(l, fName):
   f = open(fName, "w")
-  print len(l)
+  l = l[len(l)-1::-1]
   for i in range(len(l)):
     f.write(pop(l))
     f.write("\n")
   f.close()
+  return
+
+def countPalyndromesFile(fName):
+  list = initS()
+  f = open(fName)
+  for line in f.read().splitlines():
+    push(line, list)
+  return countPalyndromesList(list)
+
+def permutacion(sizeP):
+  return np.random.permutation(sizeP)
+
+def checkPerms(numPerms, sizeP):
+  matrix = np.zeros(shape = (numPerms, sizeP))
+  for i in range(numPerms):
+    matrix[i] = permutacion(sizeP)
+
+  mpl.hist(matrix)
+  mpl.show()
+  return matrix
+
+def qs(t, p, u):
+  
+  lsIgual = initS()
+  lsMayor = initS()
+  lsMenor = initS()
+  if len(t) > 1:
+    pivot = t[0]
+    for i in t:
+      if i > pivot:
+        lsMayor.append(i)
+      if i < pivot:
+        lsMenor.append(i)
+      if i == pivot:
+        lsIgual.append(i)
+    print t
+    #print "Pivote %s Mayor %s Igual %s Menor %s  " % (pivot, lsMayor, lsIgual, lsMenor )
+    return qs(lsMayor,0,len(lsMayor)-1) + lsIgual + qs(lsMenor,0,len(lsMenor)-1)
+  else:
+    return t
+
+
+#FIX-ME
+def qs2(t, p, u):
+  return
+
+#FIX-ME
+#Preguntar profesor como hacer siguiente ejercicio si no tengo la funcion partir
+
+
+def timeSort(sortM, nPerms, sizeIni, sizeFin, step):
+
   return
 
 
@@ -124,4 +182,22 @@ print  countPalyndromesList(list)
 
 #Pruebas list2file
 print "Prueba list2file en archivo practica 1"
+list = ["hola", "hooh", "lola", "ollo", "miim"]
 list2file(list, "practica.txt")
+
+#Prueba countPalyndromeFile:
+print "Prueba countPalyndromesFile"
+print countPalyndromesFile("practica.txt")
+
+#Prueba permutacion
+print "Prueba permutacion"
+print permutacion(20)
+
+#Prueba checkPerms
+print "Prueba checkPerms"
+print checkPerms(3000, 10)
+
+#Prueba qs 
+print "Prueba qs"
+perm = permutacion(10)
+print qs(perm, 0, 9)
