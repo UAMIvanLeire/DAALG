@@ -1,7 +1,13 @@
 import numpy as np
 import random
 import matplotlib.pyplot as mpl
-import timeit as time
+import timeit as timeit
+import math
+import fit
+import matplotlib.pyplot as plt
+from sklearn import linear_model
+
+
 
 def initS():
  return []
@@ -104,7 +110,7 @@ def qs(t, p, u):
   lsIgual = initS()
   lsMayor = initS()
   lsMenor = initS()
-  if len(t) > 1:
+  if u > 1:
     pivot = t[0]
     for i in t:
       if i > pivot:
@@ -122,16 +128,98 @@ def qs(t, p, u):
 
 #FIX-ME
 def qs2(t, p, u):
-  return
+  
+  return t;
 
 #FIX-ME
 #Preguntar profesor como hacer siguiente ejercicio si no tengo la funcion partir
 
 
 def timeSort(sortM, nPerms, sizeIni, sizeFin, step):
+  timeList = initS()
+  valueList = initS()
+  timeListAux = initS()
+  
+  aux = sizeIni
+  while aux < sizeFin:
+    setup = "from __main__ import %s as sortM, permutacion; permAux = permutacion(%d)" % (sortM, aux)
+    time = timeit.timeit("sortM(permAux, 0, len(permAux))", setup=setup, number = nPerms)
+    push(time, timeList)
+    push(time, timeListAux)
+    push(aux, valueList)
+    aux = aux + step
 
-  return
+#return timeList
 
+#Primera prueba que funciona
+  ##xList = zip(timeList, valueList)
+
+  ##regr = linear_model.LinearRegression()
+  ##linearModel = regr.fit(xList, valueList)
+  
+#Prueba2
+
+  # print "hello"
+  # xList = zip(timeList, valueList)
+  # print xList
+  # xList = np.array(xList)
+  # print xList
+
+  # print np.shape(xList)
+  # print xList.dtype
+  # nptime = np.array(timeListAux).reshape(len(timeList), 1)
+
+
+  # regr = linear_model.LinearRegression()
+  # linearModel = regr.fit(nptime, valueList)
+
+  #Prueba codigo nuevo
+
+  S = timeList
+  L = valueList
+  N = len(valueList) 
+
+  lr = linear_model.LinearRegression()
+  SS = np.array(S).reshape(N, 1)
+  print "SS"
+  print SS
+  print "FIT"
+  NM = lr.fit(SS, np.array(L))
+  print NM
+  LP = lr.predict(SS)
+  print "PREDICT"
+  print LP
+
+  print "PLOT"
+  
+  
+  plt.plot(S, LP, '-', S, L, '.')
+  plt.show()
+  # plt.plot(timeList)
+  # plt.ylabel("Normal values")
+  # plt.show()
+
+  # plt.plot(LP)
+  # plt.ylabel("Prediction")
+  # plt.show()
+
+  #Prediction
+
+  #print regr.predict(xList)
+  return 
+
+# def func2fit(nPerms, sizeIni, sizeFin, step):
+#   #Cambiar cuando este qs2
+#   return np.array([timeSort(qs, nPerms, sizeIni, sizeFin, step), timeSort(qs, nPerms, sizeIni, sizeFin, step)])
+  
+
+
+# def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
+#   resultTimeValues = func2fit()
+
+#   timeList = func2fit()
+
+#   return 
 
 #Pruebas funciones basicas
 list = initS()
@@ -201,3 +289,21 @@ print checkPerms(3000, 10)
 print "Prueba qs"
 perm = permutacion(10)
 print qs(perm, 0, 9)
+
+#Prueba timeSort(sortM, nPerms, sizeIni, sizeFin, step)
+print "Prueba timeSort"
+#print timeSort("qs", 10, 1, 100, 10)
+
+
+
+def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
+  func2fit("qs", 10, 1, 100, 10)
+  func2fit("qs", 10, 1, 100, 10)
+  def hola():
+    print l
+    return
+
+  hola()
+  return
+fitPlot(1, timeSort, 1, 100, 10)
+
