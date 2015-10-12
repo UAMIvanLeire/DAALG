@@ -149,64 +149,33 @@ def timeSort(sortM, nPerms, sizeIni, sizeFin, step):
     push(aux, valueList)
     aux = aux + step
 
-#return timeList
 
-#Primera prueba que funciona
-  ##xList = zip(timeList, valueList)
 
-  ##regr = linear_model.LinearRegression()
-  ##linearModel = regr.fit(xList, valueList)
+  return [timeList, valueList]
+
+
+def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
   
-#Prueba2
+  def plot(S, L):
+    N = len(L) 
 
-  # print "hello"
-  # xList = zip(timeList, valueList)
-  # print xList
-  # xList = np.array(xList)
-  # print xList
+    lr = linear_model.LinearRegression()
+    SS = np.array(S).reshape(N, 1)
 
-  # print np.shape(xList)
-  # print xList.dtype
-  # nptime = np.array(timeListAux).reshape(len(timeList), 1)
-
-
-  # regr = linear_model.LinearRegression()
-  # linearModel = regr.fit(nptime, valueList)
-
-  #Prueba codigo nuevo
-
-  S = timeList
-  L = valueList
-  N = len(valueList) 
-
-  lr = linear_model.LinearRegression()
-  SS = np.array(S).reshape(N, 1)
-  print "SS"
-  print SS
-  print "FIT"
-  NM = lr.fit(SS, np.array(L))
-  print NM
-  LP = lr.predict(SS)
-  print "PREDICT"
-  print LP
-
-  print "PLOT"
+    NM = lr.fit(SS, np.array(L))
+    LP = lr.predict(SS)
+    
+    plt.plot(S, LP, '-', S, L, '.')
+    plt.show()
   
-  
-  plt.plot(S, LP, '-', S, L, '.')
-  plt.show()
-  # plt.plot(timeList)
-  # plt.ylabel("Normal values")
-  # plt.show()
+    return
 
-  # plt.plot(LP)
-  # plt.ylabel("Prediction")
-  # plt.show()
+  values = func2fit("qs", l, nNodesIni, nNodesFin, step)
+  plot(values[0], values[1])
+  values2 = func2fit("qs", l, nNodesIni, nNodesFin, step)
+  plot(values2[0], values2[1])
 
-  #Prediction
-
-  #print regr.predict(xList)
-  return 
+  return
 
 # def func2fit(nPerms, sizeIni, sizeFin, step):
 #   #Cambiar cuando este qs2
@@ -294,16 +263,5 @@ print qs(perm, 0, 9)
 print "Prueba timeSort"
 #print timeSort("qs", 10, 1, 100, 10)
 
-
-
-def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
-  func2fit("qs", 10, 1, 100, 10)
-  func2fit("qs", 10, 1, 100, 10)
-  def hola():
-    print l
-    return
-
-  hola()
-  return
 fitPlot(1, timeSort, 1, 100, 10)
 
