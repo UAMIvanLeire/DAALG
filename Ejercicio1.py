@@ -9,6 +9,8 @@ from sklearn import linear_model
 
 
 
+
+
 def initS():
  return []
 
@@ -151,31 +153,52 @@ def timeSort(sortM, nPerms, sizeIni, sizeFin, step):
 
 
 
-  return [timeList, valueList]
+  return timeList
 
+def nlog(nNodesIni, nNodesFin, step):
+  log = []
+  for i in range(nNodesIni, nNodesFin, step):
+    log.append(i * np.log10(i))
+  nlog = np.array(log);
+  return nlog
 
 def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
+  print "timerList"
+  print l
+  nlog = func2fit(nNodesIni, nNodesFin, step);
+  print nlog
+  N = len(l) 
+
+  lr = linear_model.LinearRegression()
+  lr.fit(nlog[:, np.newaxis], l)
+  fit = lr.predict(nlog[:, np.newaxis])
+
+  plt.plot(fit)
+  plt.plot(l)
+  plt.show()
+
+  #SS = np.array(S).reshape(N, 1)
+
+  #NM = lr.fit(SS, np.array(l))
+  #LP = lr.predict(SS)
   
-  def plot(S, L):
-    N = len(L) 
-
-    lr = linear_model.LinearRegression()
-    SS = np.array(S).reshape(N, 1)
-
-    NM = lr.fit(SS, np.array(L))
-    LP = lr.predict(SS)
+  #plt.plot(S, LP, '-', S, L, '.')
+  #plt.show()
+  
     
-    plt.plot(S, LP, '-', S, L, '.')
-    plt.show()
-  
-    return
 
-  values = func2fit("qs", l, nNodesIni, nNodesFin, step)
-  plot(values[0], values[1])
-  values2 = func2fit("qs", l, nNodesIni, nNodesFin, step)
-  plot(values2[0], values2[1])
+  values = timeSort("qs", l, nNodesIni, nNodesFin, step)
+  plot(values, nlog)
+  values2 = timeSort("qs", l, nNodesIni, nNodesFin, step)
+  plot(values2, nlog)
 
   return
+
+
+
+
+
+
 
 # def func2fit(nPerms, sizeIni, sizeFin, step):
 #   #Cambiar cuando este qs2
@@ -263,5 +286,9 @@ print qs(perm, 0, 9)
 print "Prueba timeSort"
 #print timeSort("qs", 10, 1, 100, 10)
 
-fitPlot(1, timeSort, 1, 100, 10)
+print "Prueba fitplot"
+fitPlot(timeSort("qs", 10, 1, 100, 10), nlog, 1, 100, 10)
 
+
+
+#dijkstraM(mG, u):
