@@ -111,10 +111,14 @@ def checkPerms(numPerms, sizeP):
   mpl.show()
   return matrix
 
+if len(sys.argv) == 2:
+  fName = sys.argv[1]
+  numPalyndr = countPalyndromesFile(fName)
+  numLines = countLines(fName)
 
-fName = sys.argv[1]
-numPalyndr = countPalyndromesFile(fName)
-numLines = countLines(fName)
+  print "fName %s:\tnum sequences: %d\tnum palyndromes: %d" % (fName, numLines, numPalyndr)
+else:
+  print "LLamada con parametros incorrectos"
 
-print("fName %s:\tnum sequences: %d\tnum palyndromes: %d" % (fName, numLines, numPalyndr)
-  
+
+

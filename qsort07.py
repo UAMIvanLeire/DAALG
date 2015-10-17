@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import numpy as np
 import random
 import matplotlib.pyplot as mpl
@@ -7,9 +9,7 @@ import fit
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 import sys
-
-
-
+import argparse 
 
 
 def initS():
@@ -127,7 +127,7 @@ def firstP():
   return 0
 
 def qs(t, p, u):
-  if t == []:
+  if len(t) == 0:
     return []
   less = initS()
   equal = initS()
@@ -172,6 +172,7 @@ def timeSort(sortM, nPerms, sizeIni, sizeFin, step):
     push(time, timeListAux)
     push(aux, valueList)
     aux = aux + step
+    print "tamaño: %d t medio: %lf" % (aux, time)
 
   return timeList
 
@@ -199,18 +200,14 @@ def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
   return
 
 
+parser = argparse.ArgumentParser(description='Parseo de argumentos')
+parser.add_argument('-nPerms', type=int)
+parser.add_argument('-sizeI', type=int)
+parser.add_argument('-sizeF', type=int)
+parser.add_argument('-step', type=int)
 
-print "Prueba qs"
-perm = permutacion(10)
-print qs(perm, 0, 9)
+args = parser.parse_args()
 
-print "Prueba qs2"
-perm = permutacion(10)
-print qs2(perm, 0, 9)
+timeSort('qs', args.nPerms, args.sizeI, args.sizeF, args.step)
 
-
-# print sys.argv[0]
-# print "Hello"
-# print sys.argv[1]
-# print sys.argv[2]
 
