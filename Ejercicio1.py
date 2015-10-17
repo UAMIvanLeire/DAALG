@@ -6,6 +6,7 @@ import math
 import fit
 import matplotlib.pyplot as plt
 from sklearn import linear_model
+import sys
 
 
 
@@ -88,6 +89,9 @@ def list2file(l, fName):
   f.close()
   return
 
+def countLines(fName):
+  return len(open(fName).readlines())
+
 def countPalyndromesFile(fName):
   list = initS()
   f = open(fName)
@@ -107,188 +111,10 @@ def checkPerms(numPerms, sizeP):
   mpl.show()
   return matrix
 
-def qs(t, p, u):
+
+fName = sys.argv[1]
+numPalyndr = countPalyndromesFile(fName)
+numLines = countLines(fName)
+
+print("fName %s:\tnum sequences: %d\tnum palyndromes: %d" % (fName, numLines, numPalyndr)
   
-  lsIgual = initS()
-  lsMayor = initS()
-  lsMenor = initS()
-  if u > 1:
-    pivot = t[0]
-    for i in t:
-      if i > pivot:
-        lsMayor.append(i)
-      if i < pivot:
-        lsMenor.append(i)
-      if i == pivot:
-        lsIgual.append(i)
-    print t
-    #print "Pivote %s Mayor %s Igual %s Menor %s  " % (pivot, lsMayor, lsIgual, lsMenor )
-    return qs(lsMayor,0,len(lsMayor)-1) + lsIgual + qs(lsMenor,0,len(lsMenor)-1)
-  else:
-    return t
-
-
-#FIX-ME
-def qs2(t, p, u):
-  
-  return t;
-
-#FIX-ME
-#Preguntar profesor como hacer siguiente ejercicio si no tengo la funcion partir
-
-
-def timeSort(sortM, nPerms, sizeIni, sizeFin, step):
-  timeList = initS()
-  valueList = initS()
-  timeListAux = initS()
-  
-  aux = sizeIni
-  while aux < sizeFin:
-    setup = "from __main__ import %s as sortM, permutacion; permAux = permutacion(%d)" % (sortM, aux)
-    time = timeit.timeit("sortM(permAux, 0, len(permAux))", setup=setup, number = nPerms)
-    push(time, timeList)
-    push(time, timeListAux)
-    push(aux, valueList)
-    aux = aux + step
-
-
-
-  return timeList
-
-def nlog(nNodesIni, nNodesFin, step):
-  log = []
-  for i in range(nNodesIni, nNodesFin, step):
-    log.append(i * np.log10(i))
-  nlog = np.array(log);
-  return nlog
-
-def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
-  print "timerList"
-  print l
-  nlog = func2fit(nNodesIni, nNodesFin, step);
-  print nlog
-  N = len(l) 
-
-  lr = linear_model.LinearRegression()
-  lr.fit(nlog[:, np.newaxis], l)
-  fit = lr.predict(nlog[:, np.newaxis])
-
-  plt.plot(fit)
-  plt.plot(l)
-  plt.show()
-
-  #SS = np.array(S).reshape(N, 1)
-
-  #NM = lr.fit(SS, np.array(l))
-  #LP = lr.predict(SS)
-  
-  #plt.plot(S, LP, '-', S, L, '.')
-  #plt.show()
-  
-    
-
-  values = timeSort("qs", l, nNodesIni, nNodesFin, step)
-  plot(values, nlog)
-  values2 = timeSort("qs", l, nNodesIni, nNodesFin, step)
-  plot(values2, nlog)
-
-  return
-
-
-
-
-
-
-
-# def func2fit(nPerms, sizeIni, sizeFin, step):
-#   #Cambiar cuando este qs2
-#   return np.array([timeSort(qs, nPerms, sizeIni, sizeFin, step), timeSort(qs, nPerms, sizeIni, sizeFin, step)])
-  
-
-
-# def fitPlot(l, func2fit, nNodesIni, nNodesFin, step):
-#   resultTimeValues = func2fit()
-
-#   timeList = func2fit()
-
-#   return 
-
-#Pruebas funciones basicas
-list = initS()
-print emptyS(list)
-push(1, list)
-push(2, list)
-push(3, list)
-print list
-print emptyS(list)
-print list
-print pop(list)
-print list
-print pop(list)
-print list
-
-#Pruebas isPalyndrome
-print "Palyndrome True"
-print isPalyndrome("hooh")
-print "Palyndrome False"
-print isPalyndrome("fdgfdf")
-print "Palyndrome True"
-print isPalyndrome("555666555")
-print "Palyndrome False"
-print isPalyndrome("hola")
-
-#Pruebas isPalyndromeSmall
-print isPalyndromeSmall("hello")
-print isPalyndromeSmall("helloolleh")
-
-#Pruebas randomString
-print "Prueba randomString con cadena \"pali\""
-lista = ['p', 'a', 'l', 'i']
-print randomString(4, lista)
-print len(randomString(4,lista))
-print randomString(10, lista)
-
-#Pruebas randomPalyndrome
-print "Prueba randomPalyndrome con cadena \"pali\" y long impar"
-print randomPalyndrome(5, lista)
-print "Prueba randomPalyndrome con cadena \"pali\" y long par"
-print randomPalyndrome(6, lista)
-
-#Pruebas countPalyndromesList
-print "Prueba countPalyndromesList"
-list = ["hola", "hooh", "lola", "ollo", "miim"]
-print  countPalyndromesList(list)
-
-
-#Pruebas list2file
-print "Prueba list2file en archivo practica 1"
-list = ["hola", "hooh", "lola", "ollo", "miim"]
-list2file(list, "practica.txt")
-
-#Prueba countPalyndromeFile:
-print "Prueba countPalyndromesFile"
-print countPalyndromesFile("practica.txt")
-
-#Prueba permutacion
-print "Prueba permutacion"
-print permutacion(20)
-
-#Prueba checkPerms
-print "Prueba checkPerms"
-print checkPerms(3000, 10)
-
-#Prueba qs 
-print "Prueba qs"
-perm = permutacion(10)
-print qs(perm, 0, 9)
-
-#Prueba timeSort(sortM, nPerms, sizeIni, sizeFin, step)
-print "Prueba timeSort"
-#print timeSort("qs", 10, 1, 100, 10)
-
-print "Prueba fitplot"
-fitPlot(timeSort("qs", 10, 1, 100, 10), nlog, 1, 100, 10)
-
-
-
-#dijkstraM(mG, u):
