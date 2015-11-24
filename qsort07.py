@@ -31,70 +31,6 @@ def pop(S):
  del S[len(S)-1]
  return aux
 
-def isPalyndrome(cadena):
- S = initS()
- val = len(cadena)
- for i in range(val):
-  push(cadena[i], S)
- i = 0
- while(i <= val-1):
-  a = pop(S)
-  if a != cadena[i]:
-   return False
-  i = i +1
- return True
-
-def isPalyndromeSmall(cadena):
- return cadena [len(cadena)-1::-1] == cadena
-
-def randomString(long, strBase):
-  list = initS();
-  for i in range(long):
-    push(random.choice(strBase), list)
-  return list
-
-def randomPalyndrome(long, strBase):
-  if (long%2) == 0:
-    list1 = randomString(long / 2, strBase)
-    list2 = list1 [len(list1)-1::-1]
-    return list1 + list2
-  else:
-    list1 = randomString(long / 2, strBase)
-    list2 = list1 [len(list1)-1::-1]
-    list3 = randomString(1, strBase)
-    return list1 + list3 + list2
-
-#FIX-ME
-def generateRandomPalyndrList(numSt, longMax, probPalyndrome):
-  return 0
-
-def countPalyndromesList(l):
-  laux = initS()
-  list = initS()
-  for i in range(len(l)):
-    eleml = pop(l)
-    push(eleml, laux)
-    if isPalyndromeSmall(eleml):
-      push(eleml, list)
-  print laux
-  l = laux
-  return len(list)
-
-def list2file(l, fName):
-  f = open(fName, "w")
-  l = l[len(l)-1::-1]
-  for i in range(len(l)):
-    f.write(pop(l))
-    f.write("\n")
-  f.close()
-  return
-
-def countPalyndromesFile(fName):
-  list = initS()
-  f = open(fName)
-  for line in f.read().splitlines():
-    push(line, list)
-  return countPalyndromesList(list)
 
 def permutacion(sizeP):
   return np.random.permutation(sizeP)
@@ -136,7 +72,7 @@ def qs(t, p, u):
   return qs(less,0,len(less)-1) + equal + qs(great,0,len(great)-1)
 
 
-#FIX-ME
+
 def qs2(t, p, u):
   if u-p <= 1:
     return t
@@ -155,8 +91,8 @@ def qs2(t, p, u):
       queue.append((pivote+1, rango[1]))
   return t
 
-#FIX-ME
-#Preguntar profesor como hacer siguiente ejercicio si no tengo la funcion partir
+
+
 
 
 def timeSort(sortM, nPerms, sizeIni, sizeFin, step):
