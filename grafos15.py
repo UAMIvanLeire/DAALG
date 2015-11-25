@@ -349,31 +349,42 @@ def initCD(N):
 
 def union(rep1, rep2, pS):
   print "Dentro de union"
-  if pS[rep2] < pS[rep1]: #T_rep2 is taller
-    print "11"
-    pS[rep1] = rep2
-    return rep2
-  elif pS[rep2] > pS[rep1]: #T_rep1 is taller
-    print "22"
-    pS[rep2] = rep1
-    return rep1
-  else: #T_rep1, T_rep2 have the same lenght
-    pS[rep2] = rep1
-    pS[rep1] -= 1
-    print "33"
-    return rep1
+
+  pS[rep2] = rep1 #join second tree to first
+  return rep1
+  # if pS[rep2] < pS[rep1]: #T_rep2 is taller
+  #   print "11"
+  #   pS[rep1] = rep2
+  #   return rep2
+  # elif pS[rep2] > pS[rep1]: #T_rep1 is taller
+  #   print "22"
+  #   pS[rep2] = rep1
+  #   return rep1
+  # else: #T_rep1, T_rep2 have the same lenght
+  #   pS[rep2] = rep1
+  #   pS[rep1] -= 1
+  #   print "33"
+  #   return rep1
   
 def find(ind, pS, flagCC):
   if flagCC == False:
     while pS[ind] != -1:
-      print ind
       ind = pS[ind]
     return ind
   else:
     z = ind
+    print "pS[z]"
+    print pS[z]
+    print z
     while pS[z] >= 0:
+      print "Primer while del find"
+      print z
+      print pS[z]
       z = pS[z]
     while pS[ind] >= 0:
+      print "Segundo while del find"
+      print z
+      print pS[z]
       y = pS[ind]
       pS[ind] = z
       ind = y
@@ -397,22 +408,21 @@ def kruskal(dG, flagCC=True):
   Q = pq.PriorityQueue()  #iniPQ(Q)
   insertPQ(dG, Q)
   S = initCD(len(dG.keys())) #initDS(V, S) # 2
+  print "S"
   print S
-  # while not Q.empty():
-  #   print Q.get()
-  print Q.qsize()
+  
   while not Q.empty(): # 3
     w = Q.get() #extPQ((u,v), Q) # 4
-    print w
-    print Q.qsize()    
+    print "extraido de la cola"
+    print w 
     x = find(w[1], S, flagCC)
     y = find(w[2], S, flagCC) # 5
     print "xy"
     print x
     print y
     if x != y:
-      L.append((w[1],w[2])) #L.append( (u, v) ) # 6
-      #union(x, y, S) # 7
+      L.append((w[0],w[1],w[2])) #L.append( (u, v) ) # 6
+      union(x, y, S) # 7
   return L
 
 
@@ -458,10 +468,11 @@ print union(0, 1, pS)
 # insertPQ(udicc, Q)
 # while not Q.empty():
 #   print Q.get()
-udicc2 = {0:[(10,1), (12,2), (5,1)], 1:[(10,0),(4,3),(5,0)], 2:[(12,0)], 3:[(4,1)]}
-print checkUndirectedD(udicc2)
+udicc2 = {0:[(10,1), (12,2), (5,1)], 1:[(10,0),(4,3),(5,0),(6,2)], 2:[(12,0),(6,1),(8,3)], 3:[(4,1),(8,2)]}
+udicc3 = {0: [(6.0, 1), (37.0, 2),(15,3)], 1: [(6.0, 0), (40.0, 2), (40.0, 3)], 2: [(37.0, 0), (40.0, 1)], 3: [(40.0, 1),(15,0)]}
+print checkUndirectedD(udicc)
 print "LLLLL"
-print kruskal(udicc2, flagCC=False)
+print kruskal(udicc3, flagCC=False)
 
 
 
