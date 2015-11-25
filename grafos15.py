@@ -348,8 +348,6 @@ def initCD(N):
   return array
 
 def union(rep1, rep2, pS):
-  print "Dentro de union"
-
   pS[rep2] = rep1 #join second tree to first
   return rep1
   # if pS[rep2] < pS[rep1]: #T_rep2 is taller
@@ -373,18 +371,9 @@ def find(ind, pS, flagCC):
     return ind
   else:
     z = ind
-    print "pS[z]"
-    print pS[z]
-    print z
     while pS[z] >= 0:
-      print "Primer while del find"
-      print z
-      print pS[z]
       z = pS[z]
     while pS[ind] >= 0:
-      print "Segundo while del find"
-      print z
-      print pS[z]
       y = pS[ind]
       pS[ind] = z
       ind = y
@@ -403,64 +392,110 @@ def insertPQ(dG, Q):
         Q.put((peso,k,nodo)) 
   return 
 
+def formatToDicc(L, N):
+  dG = dict()
+  for i in range(N):
+    dG.update({i : []})
+  for i in L:
+    dG[i[1]].append((i[0],i[2]))
+    dG[i[2]].append((i[0],i[1]))
+  return dG
+
 def kruskal(dG, flagCC=True):
-  L = [] #we save the MST in L
-  Q = pq.PriorityQueue()  #iniPQ(Q)
+  L = [] 
+  Q = pq.PriorityQueue()  
   insertPQ(dG, Q)
-  S = initCD(len(dG.keys())) #initDS(V, S) # 2
-  print "S"
-  print S
-  
-  while not Q.empty(): # 3
-    w = Q.get() #extPQ((u,v), Q) # 4
-    print "extraido de la cola"
-    print w 
+  S = initCD(len(dG.keys())) 
+  while not Q.empty(): 
+    w = Q.get() 
     x = find(w[1], S, flagCC)
-    y = find(w[2], S, flagCC) # 5
-    print "xy"
-    print x
-    print y
+    y = find(w[2], S, flagCC) 
     if x != y:
-      L.append((w[0],w[1],w[2])) #L.append( (u, v) ) # 6
-      union(x, y, S) # 7
-  return L
+      L.append((w[0],w[1],w[2]))
+      union(x, y, S) 
+  dG = formatToDicc(L,len(dG))
+  return dG
 
+udicc = dict()
 
+def timeKruskal(nGraphs, nNodesIni, nNodesFin, step, sparseFactor, flagCC):
+  timeList = []
+  acum = 0
+  i = 0
+  for nNodes in range(nNodesIni, nNodesFin, step):
+    if i == nGraphs:
+      return timeList
+    mG = randMatrUndPosWGraph(nNodes, 0.5, maxWeight= 50)
+    udicc = fromAdjM2Dict(mG)
+    setup = "import __main__ as test"
+      
+    acum += timeit.timeit("test.kruskal(test.udicc)", setup=setup, number = 1)
+
+    timeList.append(acum/nNodes)
+    i = i + 1
+
+  return timeList
+
+def kruskal102(dG, flagCC=True):
+  timeList = []
+  L = [] 
+  Q = pq.PriorityQueue()  
+  insertPQ(dG, Q)
+  S = initCD(len(dG.keys())) 
+  #Timer
+  start_time = timeit.default_timer()
+  while not Q.empty(): 
+    w = Q.get() 
+    x = find(w[1], S, flagCC)
+    y = find(w[2], S, flagCC) 
+    if x != y:
+      L.append((w[0],w[1],w[2]))
+      union(x, y, S) 
+  elapsed = timeit.default_timer() - start_time
+  dG = formatToDicc(L,len(dG))
+  return dG, elapsed
+
+def timeKruskal102(nGraphs, nNodesIni, nNodesFin, step, sparseFactor, flagCC):
+  timeList = []
+  acum = 0
+  i = 0
+  for nNodes in range(nNodesIni, nNodesFin, step):
+    if i == nGraphs:
+      return timeList
+    mG = randMatrUndPosWGraph(nNodes, 0.5, maxWeight= 50)
+    udicc = fromAdjM2Dict(mG)
+    dG, time = kruskal102(udicc, flagCC)
+    i = i + 1
+    timeList.append(time)
+  return timeList
 #TEST
 
-m = np.zeros(shape = (4, 4))
-for i in range (4): m[i] = np.inf
+# m = np.zeros(shape = (4, 4))
+# for i in range (4): m[i] = np.inf
 
-m[0][1] = 2
-m[1][0] = 3
-m[1][2] = 1
-m[2][1] = 4
-m[2][3] = 2
-m[3][1] = 1
+# m[0][1] = 2
+# m[1][0] = 3
+# m[1][2] = 1
+# m[2][1] = 4
+# m[2][3] = 2
+# m[3][1] = 1
 
-print m 
+# print m 
 
-dicc = fromAdjM2Dict(m)
-print dicc
+# dicc = fromAdjM2Dict(m)
+# print dicc
 
-checkUndirectedD(dicc)
+# checkUndirectedD(dicc)
 
-#Prueba diccionarios no dirigidos
+# #Prueba diccionarios no dirigidos
 
-mG = randMatrUndPosWGraph(4, 0.5, maxWeight= 50)
+# mG = randMatrUndPosWGraph(4, 0.5, maxWeight= 50)
 
-udicc = fromAdjM2Dict(mG)
-print udicc
-print checkUndirectedM(mG)
-print checkUndirectedD(udicc)
-print checkUndirectedD(dicc)
-
-#Prueba CD
-#FIX-IT representación CD no esta claro, comprobacion con Kruskal
-pS = [[1, 2 ,3], [8, 4, 5], [6, 0, 9]]
-print initCD(5)
-print union(0, 1, pS)
-#print find(1, pS, False)
+# udicc = fromAdjM2Dict(mG)
+# print udicc
+# print checkUndirectedM(mG)
+# print checkUndirectedD(udicc)
+# print checkUndirectedD(dicc)
 
 
 #Test Kruskal
@@ -470,10 +505,14 @@ print union(0, 1, pS)
 #   print Q.get()
 udicc2 = {0:[(10,1), (12,2), (5,1)], 1:[(10,0),(4,3),(5,0),(6,2)], 2:[(12,0),(6,1),(8,3)], 3:[(4,1),(8,2)]}
 udicc3 = {0: [(6.0, 1), (37.0, 2),(15,3)], 1: [(6.0, 0), (40.0, 2), (40.0, 3)], 2: [(37.0, 0), (40.0, 1)], 3: [(40.0, 1),(15,0)]}
-print checkUndirectedD(udicc)
-print "LLLLL"
-print kruskal(udicc3, flagCC=False)
+print checkUndirectedD(udicc3)
+print udicc2
+print "KRUSKAL"
+print kruskal(udicc2, flagCC=False)
 
+print "timeKruskal"
+print timeKruskal(10, 1, 1000, 10, 0.5, True)
+print timeKruskal102(10, 1, 1000, 10, 0.5, True)
 
 
 
