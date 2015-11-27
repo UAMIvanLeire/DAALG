@@ -5,7 +5,7 @@ import Queue as pq
 import timeit as timeit
 import math
 import matplotlib.pyplot as plt
-from sklearn import linear_model
+#from sklearn import linear_model
 import argparse 
 
 
@@ -530,8 +530,8 @@ def drBP(dG):
   vist = [False] * len(dG)
   desc = initCD(len(dG))
 
-  
-  BP(vist, prev, fin, desc, dG, 0)
+  for k in dG:
+    BP(vist, prev, fin, desc, dG, k)
 
   return prev, fin, desc, vist
 
@@ -552,32 +552,62 @@ def drBP(dG):
 #             -desc: Lista de descubrimiento del grafo.
 ###############################################################################
 def BP(v, p, f, d, dG, u):
+  print "ELEMENTO ACTUAL %d" % u
   count = -1
-  for el in dG[u]:
-    if v[el[1]] == False:
-      #Actualización array visitados
-      v[el[1]] = True
-      #Actualización array previos
-      p[el[1]] = u
-      #Para comprobar el último tiempo(t) usado
-      for k in d:
-        if k > count:
-          count = k   
-      for k in f:
-        if k > count:
-          count = k 
-      #Actualización array descubrimiento
-      d[u] = count + 1
+  if v[int(u)] == False:
+    v[int(u)] = True
+    #Para comprobar el último tiempo(t) usado
+    for k in d:
+      if k > count:
+        count = k   
+    for k in f:
+      if k > count:
+        count = k  
+    #Actualización array descubrimiento
+    d[u] = count + 1
+    print "ultimo tiempo actualizado Descubrimiento"
+    print count
+
+    print "for BP"
+    for el in dG[u]:
+      print "Elemento"
+      print el
+      # if v[el[1]] == False:
+      #   #Actualización array visitados
+      #   v[el[1]] = True
+      #   print "visitado actualizado"
+      #   print v[el[1]]
+        #Actualización array previos
+      if v[el[1]] == False:
+        p[el[1]] = u
+      print "previo actualizado"
+      print p[el[1]]
+      
+      print "visitados"
+      print v
+      print "previos"
+      print p
+      print "finalizados"
+      print f
+      print "descubrimiento"
+      print d
       BP(v, p, f, d, dG, el[1])
-  #Para comprobar el último tiempo(t) usado
-  for k in d:
-    if k > count:
-      count = k 
-  for k in f:
-    if k > count:
-      count = k 
-  #Actualización array finalización
-  f[u] = count + 1
+    #Para comprobar el último tiempo(t) usado
+    for k in d:
+      if k > count:
+        count = k 
+    for k in f:
+      if k > count:
+        count = k 
+    
+    #Actualización array finalización
+    f[u] = count + 1
+    print "ultimo tiempo actualizado Finalizacion"
+    print f[u]
+     
+  else:
+    if u != 0: 
+      BP(v, p, f, d, dG, p[int(u)])
 
   
   return 
