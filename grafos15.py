@@ -5,11 +5,16 @@ import Queue as pq
 import timeit as timeit
 import math
 import matplotlib.pyplot as plt
-#from sklearn import linear_model
+from sklearn import linear_model
 import argparse 
 
 
-
+#######################################################
+# Nombre:
+# Funcionalidad:
+# Argumentos:
+# Salida:
+#######################################################
 def randMatrPosWGraph(nNodes, sparseFactor, maxWeight=50.):
   
   matriz = np.zeros(shape = (nNodes, nNodes))
@@ -427,11 +432,12 @@ def timeKruskal(nGraphs, nNodesIni, nNodesFin, step, sparseFactor, flagCC):
       return timeList
     mG = randMatrUndPosWGraph(nNodes, 0.5, maxWeight= 50)
     udicc = fromAdjM2Dict(mG)
-    setup = "import __main__ as test"
+    start_time = timeit.default_timer()
       
-    acum += timeit.timeit("test.kruskal(test.udicc)", setup=setup, number = 1)
-
-    timeList.append(acum/nNodes)
+    #acum += timeit.timeit("test.kruskal(test.udicc)", setup=setup, number = 1)
+    kruskal(udicc)
+    elapsed = timeit.default_timer() - start_time
+    timeList.append(elapsed)
     i = i + 1
 
   return timeList
@@ -468,6 +474,85 @@ def timeKruskal102(nGraphs, nNodesIni, nNodesFin, step, sparseFactor, flagCC):
     i = i + 1
     timeList.append(time)
   return timeList
+
+def plotKruskal(lT, func2fit, nNodesIni, nNodesFin, step):
+  n2log = func2fit(nNodesIni, nNodesFin, step);
+  print "medidas"
+  print lT 
+  print len(lT)
+  print n2log
+  print len(n2log)
+  N = len(lT) 
+
+  lr = linear_model.LinearRegression()
+  lr.fit(n2log[:, np.newaxis], lT)
+  fit = lr.predict(n2log[:, np.newaxis])
+
+  plt.plot(fit)
+  plt.plot(lT)
+  plt.show()
+
+  return
+###############################################################################
+# Nombre: incAdy
+# Funcionalidad: Devolver la lista de adyacencia e incidencia de un grado dado.
+# Argumentos: 
+#             -dG: Diccionario de adyacencia de un grafo dirigido.
+# Salida: 
+#             -Lista de adyacencia de todos los nodos del grafo.
+#             -Lista de incidencia de todos los nodos del grafo
+###############################################################################
+def incAdy(dG):
+  lAdy = np.zeros(len(dG))
+  lInc = np.zeros(len(dG))
+
+  for k in dG:
+    for le in dG[k]:
+      lAdy[k] += 1
+      lAdy[le[1]] += 1
+      lInc[le[1]] += 1
+  return lAdy, lInc
+
+###############################################################################
+# Nombre: drBP
+# Funcionalidad: Función contenedora de la función que desarrolla el algoritmo de 
+# busqueda en profundidad en grafos dirigidos.
+# Argumentos: 
+#             -dG: Diccionario de adyacencia de un grafo dirigido.
+# Salida: 
+#             -prev: Lista de previos del grafo.
+#             -fin: Lista de finalización del grafo
+#             -desc: Lista de descubrimiento del grafo.
+###############################################################################
+def drBP(dG):
+  prev = initCD(len(dG))
+  fin = initCD(len(dG))
+  desc = initCD(len(dG))
+
+  BP(prev, fin, desc, dG)
+
+  return prev, fin, desc
+
+###############################################################################
+# Nombre: BP
+# Funcionalidad: Función que desarrolla el algoritmo de busqueda en profundidad
+# en grafos dirigidos.
+# Argumentos: 
+#             -dG: Diccionario de adyacencia de un grafo dirigido.
+#             -prev: Lista de previos del grafo.
+#             -fin: Lista de finalización del grafo
+#             -desc: Lista de descubrimiento del grafo.
+# Salida: 
+#             -prev: Lista de previos del grafo.
+#             -fin: Lista de finalización del grafo
+#             -desc: Lista de descubrimiento del grafo.
+###############################################################################
+def BP(prev, fin, desc, dG):
+  return 
+
+
+
+
 #TEST
 
 # m = np.zeros(shape = (4, 4))
@@ -505,17 +590,24 @@ def timeKruskal102(nGraphs, nNodesIni, nNodesFin, step, sparseFactor, flagCC):
 #   print Q.get()
 udicc2 = {0:[(10,1), (12,2), (5,1)], 1:[(10,0),(4,3),(5,0),(6,2)], 2:[(12,0),(6,1),(8,3)], 3:[(4,1),(8,2)]}
 udicc3 = {0: [(6.0, 1), (37.0, 2),(15,3)], 1: [(6.0, 0), (40.0, 2), (40.0, 3)], 2: [(37.0, 0), (40.0, 1)], 3: [(40.0, 1),(15,0)]}
-print checkUndirectedD(udicc3)
-print udicc2
-print "KRUSKAL"
-print kruskal(udicc2, flagCC=False)
+dicc3 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)]}
+# print checkUndirectedD(udicc3)
+# print udicc2
+# print "KRUSKAL"
+# print kruskal(udicc2, flagCC=False)
 
-print "timeKruskal"
-print timeKruskal(10, 1, 1000, 10, 0.5, True)
-print timeKruskal102(10, 1, 1000, 10, 0.5, True)
+# print "timeKruskal"
+# time = timeKruskal(10, 1, 1000, 10, 0.5, True)
+# print time
+# print timeKruskal102(10, 1, 1000, 10, 0.5, True)
 
+# plotKruskal(time, n2log, 1, 100, 10)
 
+#TEST BP
 
+a,b = incAdy(dicc3)
+print a
+print b
 
 
 
