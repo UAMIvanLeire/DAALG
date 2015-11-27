@@ -527,11 +527,13 @@ def incAdy(dG):
 def drBP(dG):
   prev = initCD(len(dG))
   fin = initCD(len(dG))
+  vist = [False] * len(dG)
   desc = initCD(len(dG))
 
-  BP(prev, fin, desc, dG)
+  
+  BP(vist, prev, fin, desc, dG, 0)
 
-  return prev, fin, desc
+  return prev, fin, desc, vist
 
 ###############################################################################
 # Nombre: BP
@@ -539,15 +541,39 @@ def drBP(dG):
 # en grafos dirigidos.
 # Argumentos: 
 #             -dG: Diccionario de adyacencia de un grafo dirigido.
-#             -prev: Lista de previos del grafo.
-#             -fin: Lista de finalización del grafo
-#             -desc: Lista de descubrimiento del grafo.
+#             -v: Lista de nodos visitados del algoritmo.
+#             -p: Lista de previos del grafo.
+#             -f: Lista de finalización del grafo
+#             -d: Lista de descubrimiento del grafo.
+#             
 # Salida: 
 #             -prev: Lista de previos del grafo.
 #             -fin: Lista de finalización del grafo
 #             -desc: Lista de descubrimiento del grafo.
 ###############################################################################
-def BP(prev, fin, desc, dG):
+def BP(v, p, f, d, dG, u):
+  count = 0
+  for el in dG[u]:
+    print u
+    if v[el[1]] == False:
+      v[el[1]] = True
+      p[el[1]] = u
+      
+      for k in d:
+        if k > count:
+          count = k   
+      for k in f:
+        if k > count:
+          count = k 
+      d[u] = count + 1
+      BP(v, p, f, d, dG, el[1])
+  for k in d:
+    if k > count:
+      count = k 
+  for k in f:
+    if k > count:
+      count = k 
+  f[u] = count + 1
   return 
 
 
@@ -605,11 +631,15 @@ dicc3 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)]}
 
 #TEST BP
 
-a,b = incAdy(dicc3)
-print a
-print b
+# a,b = incAdy(dicc3)
+# print a
+# print b
 
-
+c,d,e,f = drBP(dicc3)
+print c
+print d
+print e
+print f
 
 
 
