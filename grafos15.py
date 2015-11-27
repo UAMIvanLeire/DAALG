@@ -552,28 +552,34 @@ def drBP(dG):
 #             -desc: Lista de descubrimiento del grafo.
 ###############################################################################
 def BP(v, p, f, d, dG, u):
-  count = 0
+  count = -1
   for el in dG[u]:
-    print u
     if v[el[1]] == False:
+      #Actualización array visitados
       v[el[1]] = True
+      #Actualización array previos
       p[el[1]] = u
-      
+      #Para comprobar el último tiempo(t) usado
       for k in d:
         if k > count:
           count = k   
       for k in f:
         if k > count:
           count = k 
+      #Actualización array descubrimiento
       d[u] = count + 1
       BP(v, p, f, d, dG, el[1])
+  #Para comprobar el último tiempo(t) usado
   for k in d:
     if k > count:
       count = k 
   for k in f:
     if k > count:
       count = k 
+  #Actualización array finalización
   f[u] = count + 1
+
+  
   return 
 
 
@@ -636,9 +642,13 @@ dicc3 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)]}
 # print b
 
 c,d,e,f = drBP(dicc3)
+print "previos"
 print c
+print "finalización"
 print d
+print "descubrimiento"
 print e
+print "visitados"
 print f
 
 
