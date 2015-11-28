@@ -533,7 +533,7 @@ def drBP(dG):
   for k in dG:
     BP(vist, prev, fin, desc, dG, k)
 
-  return prev, fin, desc, vist
+  return desc, fin, prev
 
 ###############################################################################
 # Nombre: BP
@@ -612,6 +612,36 @@ def BP(v, p, f, d, dG, u):
   
   return 
 
+def BPasc(vist, prev, fin, desc, dG, k ):
+  count = -1
+  if v[int(u)] == False:
+    v[int(u)] = True
+    #Para comprobar el último tiempo(t) usado
+    for k in d:
+      if k > count:
+        count = k   
+    for k in f:
+      if k > count:
+        count = k  
+    #Actualización array descubrimiento
+    d[u] = count + 1
+    for el in dG[u]:
+      if v[el[1]] == False:
+        p[el[1]] = u
+      BP(v, p, f, d, dG, el[1])
+    #Para comprobar el último tiempo(t) usado
+    for k in d:
+      if k > count:
+        count = k 
+    for k in f:
+      if k > count:
+        count = k    
+    #Actualización array finalización
+    f[u] = count + 1 
+  else:
+    if u != 0: 
+      BP(v, p, f, d, dG, p[int(u)])
+  return 
 
 
 
@@ -653,6 +683,8 @@ def BP(v, p, f, d, dG, u):
 udicc2 = {0:[(10,1), (12,2), (5,1)], 1:[(10,0),(4,3),(5,0),(6,2)], 2:[(12,0),(6,1),(8,3)], 3:[(4,1),(8,2)]}
 udicc3 = {0: [(6.0, 1), (37.0, 2),(15,3)], 1: [(6.0, 0), (40.0, 2), (40.0, 3)], 2: [(37.0, 0), (40.0, 1)], 3: [(40.0, 1),(15,0)]}
 dicc3 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)]}
+diccInconexo = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)], 4:[(10,1)]}
+diccInconexo2 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)], 4:[(12,1)], 5:[(30,0), (25,3)]}
 # print checkUndirectedD(udicc3)
 # print udicc2
 # print "KRUSKAL"
@@ -671,15 +703,14 @@ dicc3 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)]}
 # print a
 # print b
 
-c,d,e,f = drBP(dicc3)
+d,f,p = drBP(diccInconexo2)
 print "previos"
-print c
+print p
 print "finalización"
-print d
-print "descubrimiento"
-print e
-print "visitados"
 print f
+print "descubrimiento"
+print d
+
 
 
 
