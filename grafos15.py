@@ -552,7 +552,6 @@ def drBP(dG):
 #             -desc: Lista de descubrimiento del grafo.
 ###############################################################################
 def BP(v, p, f, d, dG, u):
-  print "ELEMENTO ACTUAL %d" % u
   count = -1
   if v[int(u)] == False:
     v[int(u)] = True
@@ -565,32 +564,9 @@ def BP(v, p, f, d, dG, u):
         count = k  
     #Actualización array descubrimiento
     d[u] = count + 1
-    print "ultimo tiempo actualizado Descubrimiento"
-    print count
-
-    print "for BP"
     for el in dG[u]:
-      print "Elemento"
-      print el
-      # if v[el[1]] == False:
-      #   #Actualización array visitados
-      #   v[el[1]] = True
-      #   print "visitado actualizado"
-      #   print v[el[1]]
-        #Actualización array previos
       if v[el[1]] == False:
         p[el[1]] = u
-      print "previo actualizado"
-      print p[el[1]]
-      
-      print "visitados"
-      print v
-      print "previos"
-      print p
-      print "finalizados"
-      print f
-      print "descubrimiento"
-      print d
       BP(v, p, f, d, dG, el[1])
     #Para comprobar el último tiempo(t) usado
     for k in d:
@@ -599,11 +575,8 @@ def BP(v, p, f, d, dG, u):
     for k in f:
       if k > count:
         count = k 
-    
     #Actualización array finalización
     f[u] = count + 1
-    print "ultimo tiempo actualizado Finalizacion"
-    print f[u]
      
   else:
     if u != 0: 
@@ -612,7 +585,7 @@ def BP(v, p, f, d, dG, u):
   
   return 
 
-def BPasc(vist, prev, fin, desc, dG, k ):
+def BPasc(v, p, f, d, dG, u, asc):
   count = -1
   if v[int(u)] == False:
     v[int(u)] = True
@@ -628,7 +601,10 @@ def BPasc(vist, prev, fin, desc, dG, k ):
     for el in dG[u]:
       if v[el[1]] == False:
         p[el[1]] = u
-      BP(v, p, f, d, dG, el[1])
+      #Calculo de ramas ascendentes
+      rAscendentes(u, asc, p)
+
+      BPasc(v, p, f, d, dG, int(el[1]), asc)
     #Para comprobar el último tiempo(t) usado
     for k in d:
       if k > count:
@@ -639,11 +615,157 @@ def BPasc(vist, prev, fin, desc, dG, k ):
     #Actualización array finalización
     f[u] = count + 1 
   else:
+    rAscendentes(u, asc, p)
     if u != 0: 
-      BP(v, p, f, d, dG, p[int(u)])
+      BPasc(v, p, f, d, dG, p[int(u)], asc)
   return 
 
 
+def rAscendentes(u,asc,p):
+  P = u
+  cont = 0   
+  while P != -1:
+    previoAnterior = P
+    P = p[P]
+    cont += 1
+    if cont > 2:
+      asc.append((u,int(previoAnterior))) 
+  return 
+
+def detectarCiclos(p,dG):
+  
+  for k in dG:
+    for el in dG[k]:
+      P = k  
+      while P != -1:
+        P = p[P]
+        if P == el[1]:
+          return True
+      asc =  P != -1
+  return False
+
+
+
+def drBPasc(dG):
+  prev = initCD(len(dG))
+  fin = initCD(len(dG))
+  vist = [False] * len(dG)
+  desc = initCD(len(dG))
+  asc = []
+
+  for k in dG:
+    BPasc(vist, prev, fin, desc, dG, k, asc)
+
+  asc = np.unique(asc)
+  return asc
+
+def DAG(dG):
+  d,f,p = drBP(dG)
+  return detectarCiclos(p,dG)
+  
+def OT(dG):
+  OT = []
+  q = pq.PriorityQueue()
+
+  #Comprobar si es dirigido
+  if checkUndirectedM(dG) == False:
+    #Comprobar si tiene ciclos
+    if DAG(dG) == False:
+      #Realizar ordenacion topologica
+      #Comprobar cual es el nodo inicial(menor incidencia)
+      ady,inc = incAdy(dG)
+      min = np.amin(inc)
+      nodo = 0
+      for nodo in range(len(inc)):
+        if min == inc[nodo]:
+          break
+      
+      #Realizar BP empexando en nodo con menor incidencia
+      d,f,p = drBPOT(dG, nodo)
+
+      for k in range(len(f)):
+        q.put((f[k], k)) 
+      while not q.empty():
+        w = q.get()
+        OT.append(w)
+      OT = OT[::-1]
+      for el in range(len(OT)):
+        OT[el] = OT[el][1]
+      return OT
+  return 
+
+def drBPOT(dG, nodo):
+  prev = initCD(len(dG))
+  fin = initCD(len(dG))
+  vist = [False] * len(dG)
+  desc = initCD(len(dG))
+  
+  BP(vist, prev, fin, desc, dG, nodo)
+  for n in range(len(vist)):
+    if vist[n] == False:
+      BP(vist, prev, fin, desc, dG, n)
+
+  return desc, fin, prev
+
+def distMinSingleSourceDAG(dG):
+  #Comprobar si es dirigido
+  if checkUndirectedM(dG) == False:
+    #Comprobar si tiene ciclos
+    if DAG(dG) == False:
+      #Comprobar si tiene una unica fuente
+      d,f,p = drBP(dG)
+      count = 0
+      for prev in p:
+        if prev == -1:
+          count += 1
+      print "fuentes"
+      print count
+      if count == 1:
+        print "Cumplidas condiciones previas"
+        #DAG con una única fuente.
+        #Comprobar si hay más de un vértice con incidencia 0
+        ady,inc = incAdy(dG)
+        count = 0
+        print "incidencia"
+        print inc
+        for l in range(len(inc)):
+          if inc[l] == 0:
+            count += 1
+            if count == 1:
+              source = l
+        if count > 1:
+          print "Existe más de un vértice de incidencia 0"
+          print "Se usará el vértice %d como source" % source
+
+        #Cálculo de distancias mínimas.
+        #Preparación variables
+        d = []
+        p = []
+        L = []
+        for i in range(len(dG)):
+          p.append(-1) 
+          d.append(np.inf) 
+        #Obtener la ordenación topológica.
+        L = OT(dG)
+        print "ordenacion topológica"
+        
+        d[L[0]] = 0
+        for i in range(len(L)):
+          for el in dG[L[i]]:
+            if d[el[1]] > d[L[i]] + el[0]:
+              d[el[1]] = d[L[i]] + el[0]
+              p[el[1]] = L[i]
+        return d,p
+        #Iterar sobre la ordenación topológica para encontrar caminos mínimos
+        
+      else:
+        print "Mas de un nodo fuente encontrado"
+    else:
+      print "Grafo con ciclos"
+  else:
+    print "Grafo no dirigido"
+
+  return
 
 #TEST
 
@@ -684,7 +806,11 @@ udicc2 = {0:[(10,1), (12,2), (5,1)], 1:[(10,0),(4,3),(5,0),(6,2)], 2:[(12,0),(6,
 udicc3 = {0: [(6.0, 1), (37.0, 2),(15,3)], 1: [(6.0, 0), (40.0, 2), (40.0, 3)], 2: [(37.0, 0), (40.0, 1)], 3: [(40.0, 1),(15,0)]}
 dicc3 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)]}
 diccInconexo = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)], 4:[(10,1)]}
-diccInconexo2 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(15,0)], 4:[(12,1)], 5:[(30,0), (25,3)]}
+diccInconexo2 = {0: [(6, 1)], 1: [(40, 2), (40, 3)], 2: [(37, 0)], 3: [(15,0)], 4:[(12,1)], 5:[(30,0), (25,3)]}
+diccAscAciclico = {0: [(3,1), (4,2), (3,4)], 1: [(3,3)], 2: [], 3: [(5,2)], 4:[(9,3)]}
+diccAscAciclico2 = {0: [(3,1), (4,2), (3,4)], 1: [(3,3)], 2: [], 3: [(5,2)], 4:[(1,3), (6,5)], 5:[]}
+diccAscCiclico = {0: [(3,1), (4,2), (3,4)], 1: [(3,3)], 2: [], 3: [(5,2)], 4:[(9,3), (6,5)], 5:[(3,0)]}
+diccAscAciclico3 = {0: [(3,1), (4,2), (3,4)], 1: [(3,3)], 2: [], 3: [(5,2)], 4:[(9,3)], 5:[(5,0)], 6:[(2,0)]}
 # print checkUndirectedD(udicc3)
 # print udicc2
 # print "KRUSKAL"
@@ -703,17 +829,25 @@ diccInconexo2 = {0: [(6.0, 1)], 1: [(40.0, 2), (40.0, 3)], 2: [(37.0, 0)], 3: [(
 # print a
 # print b
 
-d,f,p = drBP(diccInconexo2)
-print "previos"
-print p
-print "finalización"
-print f
-print "descubrimiento"
-print d
+# d,f,p = drBP(diccAscAciclico2)
+# print "previos"
+# print p
+# print "finalización"
+# print f
+# print "descubrimiento"
+# print d
 
+# a = drBPasc(diccAscAciclico2)
 
+# # print "ascendentes"
+# print a
 
+# print DAG(diccAscCiclico)
 
+print "OT"
+print OT(diccAscAciclico2)
+
+print distMinSingleSourceDAG(diccAscAciclico2)
 
 
 
