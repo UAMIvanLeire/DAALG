@@ -1,3 +1,0 @@
-# DAALG
-
-Ejercicio1
