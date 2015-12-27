@@ -129,7 +129,60 @@ def genSucesionPublica(lSC, p, mod):
 ###############################################################################
 
 def lPub_2_lSC(l_pub, q, mod):
-	return
+	sol = []
+	for k in l_pub:
+		sol.append(k*q%mod)
+	return sol
+
+###############################################################################
+# Nombre: genRandomBitString
+# Funcionalidad: Genera un array de bits aleatorios.
+# Argumentos: 
+#             -n_bits: tamaño del array de bits.
+# Salida: 
+#             -array: Array de bits.
+###############################################################################
+
+def genRandomBitString(n_bits):
+	return np.random.randint(2, size=n_bits)
+
+###############################################################################
+# Nombre: MH_encrypt
+# Funcionalidad: Genera la lista con el cifrado de cada bloque de la lista de
+# bits.
+# Argumentos: 
+#             -s: Array de bits a cifrar.
+#             -lPub: Solución pública.
+#             -mod: módulo necesario para el cifrado.
+# Salida: 
+#             -cifrado: lista con el cifrado de cada bloque.
+###############################################################################
+
+def MH_encrypt(s, lPub, mod):
+	tamMod = len(s)%len(lPub)
+	
+	lPriv = lPub_2_lSC(lPub, q, mod)
+	#Rellenamos con 0 para conseguir un tamaño multiplo de lPub.
+	if tamMod != 0:
+		zero = np.zeros((len(lPub)-tamMod,), dtype=np.int)
+		s = np.concatenate((s, zero), axis=0)
+	#Transforammos array en matriz MxN
+	sArray = np.array(s)
+	matrix = np.reshape(sArray, (-1, len(lPub)))
+	print matrix
+	#Transformamos cada bloque en su entero para poder cifrarlo.
+	for k in matrix:
+		sum = 0
+		for i in range(len(lPub)):
+			if k[i] == 1:
+				sum += lPriv[i]
+
+		# str1 = ''.join(str(e) for e in k)
+		# num = int(str1, 2)
+		
+	return 
+
+
 #TESTS 
 
 lSC = genSuperCrec(10)
@@ -148,3 +201,11 @@ print inv
 print "solPublica"
 solPublica = genSucesionPublica(lSC, mul, mod)
 print solPublica
+print "solPrivada"
+solPrivada = lPub_2_lSC(solPublica, inv, mod)
+print solPrivada
+print "array de bits"
+bits = genRandomBitString(16)
+print bits
+print "Cifrado"
+MH_encrypt(bits, [1,2,3,4,5], 6)

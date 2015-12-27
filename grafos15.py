@@ -1115,9 +1115,4 @@ def distMinSingleSourceDAG(dG):
 
   return
 
-print "timeKruskal"
-time = timeKruskal(10, 1, 1000, 10, 0.5, True)
-print time
-print timeKruskal02(10, 1, 1000, 10, 0.5, True)
 
-plotKruskal(time, n2log, 1, 100, 10)
