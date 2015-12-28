@@ -168,8 +168,7 @@ def MH_encrypt(s, lPub, mod):
 
  # 	Generar solución pública asociada a la sucesión supercreciente lPub.
  # 	lPublica = genSucesionPublica(lPub, mul, mod)
- 	print "lPublica"
- 	print lPub
+ 
 	#Rellenamos con 0 para conseguir un tamaño multiplo de lPub.
 	if tamMod != 0:
 		zero = np.zeros((len(lPub)-tamMod,), dtype=np.int)
@@ -191,58 +190,96 @@ def MH_encrypt(s, lPub, mod):
 		
 	return res
 
+
+###############################################################################
+# Nombre: block_decrypt
+# Funcionalidad: Genera el código descifrado de un bloque en una lista.
+# Argumentos: 
+#             -C: Cifrado de un bloque.
+#             -l_sc: Lista privada.
+#             -mod: Módulo necesario para el descifrado.
+#			  -inv: Inverso del multiplicador y el módulo usado para el cifrado.
+# Salida: 
+#             -res: lista con el bloque descifrado.
+###############################################################################
+
 def block_decrypt(C, l_sc, inv, mod):
 	#Cálculo de C'.
 	cprim = inv * C % mod
-
+	print cprim
+	print C
 	#Descifrado
 	res = []
-	w = 0
-	while cprim > 0:
+	w = len(l_sc)-1
+	while w >= 0:
 		if l_sc[w] > cprim:
 			res.append(0)
 		else:
 			res.append(1)
 			cprim = cprim - l_sc[w]
-		w += 1
+		w -= 1
+
+	#Como el append introduce los números en orden inverso invertimos la lista antes de devolverlo.
+	return res[::-1] 
 
 
-	return res 
+###############################################################################
+# Nombre: l_decrypt
+# Funcionalidad: Genera el código descifrado de una lista de bloques cifrados.
+# Argumentos: 
+#             -l_cifra: Lista de bloques cifrados.
+#             -l_sc: Lista privada.
+#             -mod: Módulo necesario para el descifrado.
+#			  -inv: Inverso del multiplicador y el módulo usado para el cifrado.
+# Salida: 
+#             -res: lista de los bloques descifrados concatenados.
+###############################################################################
+
+def l_decrypt(l_ifra, l_sc, inv, mod):
+	res = []
+	for k in l_ifra:
+		res.extend(block_decrypt(k, l_sc, inv, mod))
+	return res
+
 
 #TESTS 
 print "inverso"
-print inverse(7, 12)
-lSC = genSuperCrec(10)
-print "lSC"
-print lSC
-print mcd(65, 15)
-print multiplier(30, 10)
-print inverse(117, 244)
-mod,mul,inv = modMultInv(lSC)
-print "mod"
-print mod
-print "mul"
-print mul
-print "inv"
-print inv
+print inverse(7, 50)
+# lSC = genSuperCrec(10)
+# print "lSC"
+# print lSC
+# print mcd(65, 15)
+# print multiplier(30, 10)
+# print inverse(117, 244)
+# mod,mul,inv = modMultInv(lSC)
+# print "mod"
+# print mod
+# print "mul"
+# print mul
+# print "inv"
+# print inv
+# print "solPublica"
+# solPublica = genSucesionPublica(lSC, mul, mod)
+# print solPublica
+# print "solPrivada"
+# solPrivada = lPub_2_lSC(solPublica, inv, mod)
+# print solPrivada
+# print "array de bits"
+# bits = genRandomBitString(16)
+# print bits
+bits = [0, 0, 1, 0, 1, 1, 1, 0, 1, 0]
+mod = 50
+mul = 7
+lSC = [1,3,6,12,24]
+inv = 43
 print "solPublica"
 solPublica = genSucesionPublica(lSC, mul, mod)
 print solPublica
-print "solPrivada"
-solPrivada = lPub_2_lSC(solPublica, inv, mod)
-print solPrivada
-print "array de bits"
-bits = genRandomBitString(16)
-print bits
-bits = [1, 0, 1, 1, 0]
-solPublica = [32,22,12,24,16]
-mod = 32
-lSC = [1,2,4,8,16]
-inv = 19
 print "Cifrado"
 res = MH_encrypt(bits, solPublica, mod)
 print res
-print "Descrifrado"
-print "Adescifrar: "
+print "Descrifrado de bloque 1"
 print res[0]
 print block_decrypt(res[0], lSC, inv, mod)
+print "Descrifrado completo"
+print l_decrypt(res, lSC, inv, mod)
