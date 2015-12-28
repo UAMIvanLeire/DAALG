@@ -82,7 +82,7 @@ def inverse(p, mod):
 
 ###############################################################################
 # Nombre: modMultInv
-# Funcionalidad: Calcular un módulo inverso y multiplicador para la lista super
+# Funcionalidad: Calcular un módulo, inverso y multiplicador para la lista super
 # creciente dada.
 # Argumentos: 
 #             -lSC: Sucensión supercreciente. 
@@ -146,6 +146,8 @@ def lPub_2_lSC(l_pub, q, mod):
 def genRandomBitString(n_bits):
 	return np.random.randint(2, size=n_bits)
 
+
+
 ###############################################################################
 # Nombre: MH_encrypt
 # Funcionalidad: Genera la lista con el cifrado de cada bloque de la lista de
@@ -160,31 +162,56 @@ def genRandomBitString(n_bits):
 
 def MH_encrypt(s, lPub, mod):
 	tamMod = len(s)%len(lPub)
-	
-	lPriv = lPub_2_lSC(lPub, q, mod)
+	# Generar multiplicador e inverso adecuado a la sucesión lPub
+	# mul = multiplier(mod, np.sum(lPub))
+	# inv = inverse(mul, mod)
+
+ # 	Generar solución pública asociada a la sucesión supercreciente lPub.
+ # 	lPublica = genSucesionPublica(lPub, mul, mod)
+ 	print "lPublica"
+ 	print lPub
 	#Rellenamos con 0 para conseguir un tamaño multiplo de lPub.
 	if tamMod != 0:
 		zero = np.zeros((len(lPub)-tamMod,), dtype=np.int)
 		s = np.concatenate((s, zero), axis=0)
+
 	#Transforammos array en matriz MxN
 	sArray = np.array(s)
 	matrix = np.reshape(sArray, (-1, len(lPub)))
 	print matrix
+
 	#Transformamos cada bloque en su entero para poder cifrarlo.
+	res = []
 	for k in matrix:
 		sum = 0
 		for i in range(len(lPub)):
 			if k[i] == 1:
-				sum += lPriv[i]
-
-		# str1 = ''.join(str(e) for e in k)
-		# num = int(str1, 2)
+				sum += lPub[i]
+		res.append(sum)
 		
-	return 
+	return res
 
+def block_decrypt(C, l_sc, inv, mod):
+	#Cálculo de C'.
+	cprim = inv * C % mod
+
+	#Descifrado
+	res = []
+	w = 0
+	while cprim > 0:
+		if l_sc[w] > cprim:
+			res.append(0)
+		else:
+			res.append(1)
+			cprim = cprim - l_sc[w]
+		w += 1
+
+
+	return res 
 
 #TESTS 
-
+print "inverso"
+print inverse(7, 12)
 lSC = genSuperCrec(10)
 print "lSC"
 print lSC
@@ -207,5 +234,15 @@ print solPrivada
 print "array de bits"
 bits = genRandomBitString(16)
 print bits
+bits = [1, 0, 1, 1, 0]
+solPublica = [32,22,12,24,16]
+mod = 32
+lSC = [1,2,4,8,16]
+inv = 19
 print "Cifrado"
-MH_encrypt(bits, [1,2,3,4,5], 6)
+res = MH_encrypt(bits, solPublica, mod)
+print res
+print "Descrifrado"
+print "Adescifrar: "
+print res[0]
+print block_decrypt(res[0], lSC, inv, mod)
